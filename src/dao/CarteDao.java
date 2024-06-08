@@ -125,6 +125,37 @@ public class CarteDao {
             return grille;
         }
 
+        public ArrayList<Carte> getGrillePartie(String code){
+            ArrayList <Carte> grille = new ArrayList<Carte>();
+            int idPartie = this.partieDao.getId(code);
+            try {
+                String query = "SELECT * FROM carte WHERE idPartie = ?";
+                PreparedStatement statement = this.database.prepareStatement(query);
+                statement.setInt(1, idPartie);
+                ResultSet resultSet = statement.executeQuery();
+                while(resultSet.next()) { 
+                    int foundId = resultSet.getInt("id");
+                    boolean etat_carte = resultSet.getBoolean("isCheck");
+                    int idMot = resultSet.getInt("idMot");
+                    int id_couleur = resultSet.getInt("idCouleur");
+                    int idIncide = resultSet.getInt("idIndice");
+                    int posX = resultSet.getInt("posX");
+                    int posY = resultSet.getInt("posY");
+                    String mot=this.motDao.getMot(idMot);
+                    String indice=this.indiceDao.getIndice(idIncide);
+                    grille.add(new Carte(foundId,posX,posY,etat_carte,code,mot,Couleur.getByIndex(id_couleur-1),indice)) ;
+                    
+                }
+                resultSet.close();
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la fonction getGrillePartie() de CarteDao.java");
+            }
+            System.out.println("Grille de la partie "+code+" : "+grille);
+            return grille;
+        }
+
         //fonction qui attribue les couleurs aléatoirement aux cartes de la partie
         private int getRandomInteger(){
             List<Integer> weightedList = new ArrayList<>();

@@ -72,6 +72,42 @@ public class PartieDao {
         return null;
     }
 
+    public int getEtatPartie(int id){
+        try {
+            String query = "SELECT etat_partie FROM partie WHERE id = ?";
+            PreparedStatement statement = this.database.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("etat_partie");
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("erreur dans la fonction getEtatPartie() de PartieDao.java");
+        }
+        return -1;
+    }
+
+    public int getScore(int id){
+        try {
+            String query = "SELECT score FROM partie WHERE id = ?";
+            PreparedStatement statement = this.database.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("score");
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("erreur dans la fonction getScore() de PartieDao.java");
+        }
+        return -1;
+    }
+
     public String generateCodeUnique() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         int length = 6;

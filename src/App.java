@@ -31,6 +31,17 @@ public class App {
              System.out.println("erreur dans la rquête post de la route /CreatePartie");
          }
          });
+
+         webserver.getRouter().post("/JoinPartie", (WebServerContext context)->{
+            try {
+             PartieController.JoinPartie(context);
+         } catch (SQLException e) {
+             e.printStackTrace();
+             System.out.println("erreur dans la rquête post de la route /JoinPartie");
+         }
+         });
+
+
     }
     
 }

@@ -15,6 +15,9 @@ public class JoueurDao {
 
     public int CreateJoueur(String nom, int role) {
         try {
+            if(checkJoueur(nom)){
+                return -1;
+            }
             String query = "INSERT INTO Joueur (nom, role) VALUES (?, ?)";
             PreparedStatement statement = this.database.prepareStatement(query);
             statement.setString(1, nom); // Utilisation du pseudo passé en paramètre
@@ -69,6 +72,26 @@ public class JoueurDao {
             System.out.println("erreur dans la fonction getRole() de JoueurDao.java");
         }
         return role;
+    }
+
+    public boolean checkJoueur(String nom){
+        try {
+            String query = "SELECT * FROM joueur WHERE nom = ?";
+            PreparedStatement statement = this.database.prepareStatement(query);
+            statement.setString(1, nom);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                resultSet.close();
+                statement.close();
+                return true;
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("erreur dans la fonction checkJoueur() de JoueurDao.java");
+        }
+        return false;
     }
 
 }
