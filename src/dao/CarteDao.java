@@ -17,13 +17,11 @@ public class CarteDao {
     private final polynamesDatabase database;
     private final PartieDao partieDao;
     private final MotDao motDao;
-    private final indiceDao indiceDao;
 
     public CarteDao() throws SQLException {
         this.database = new polynamesDatabase();
         this.partieDao= new PartieDao();
         this.motDao= new MotDao();
-        this.indiceDao= new indiceDao();
     }
 
         public ArrayList<Carte> findAll() {
@@ -41,13 +39,11 @@ public class CarteDao {
                     int id_Partie = resultSet.getInt("idPartie");
                     int idMot = resultSet.getInt("idMot");
                     int id_couleur = resultSet.getInt("idCouleur");
-                    int idIncide = resultSet.getInt("idIndice");
 
                     String code_partie=this.partieDao.getCodePartie(id_Partie);
                     String mot=this.motDao.getMot(idMot);
-                    String indice=this.indiceDao.getIndice(idIncide);
 
-                    cartes.add(new Carte(foundId,positionX,positionY,etat_carte,code_partie,mot,Couleur.getByIndex(id_couleur-1),indice));
+                    cartes.add(new Carte(foundId,positionX,positionY,etat_carte,code_partie,mot,Couleur.getByIndex(id_couleur-1)));
                 }
                 resultSet.close();
                 statement.close();
@@ -72,14 +68,11 @@ public class CarteDao {
                     boolean etat_carte = resultSet.getBoolean("isCheck");
                     int idMot = resultSet.getInt("idMot");
                     int id_couleur = resultSet.getInt("idCouleur");
-                    int idIncide = resultSet.getInt("idIndice");
 
                     String code_partie=this.partieDao.getCodePartie(idPartie);
                     String mot=this.motDao.getMot(idMot);
-                    String indice=this.indiceDao.getIndice(idIncide);
-                    System.out.println("Mot trouvé pour la partie  : "+code_partie+" : "+ mot  + "Fonction getCarte() de CarteDao.java");
 
-                    return new Carte(foundId,posX,posY,etat_carte,code_partie,mot,Couleur.getByIndex(id_couleur-1),indice);
+                    return new Carte(foundId,posX,posY,etat_carte,code_partie,mot,Couleur.getByIndex(id_couleur-1));
                 }
                 resultSet.close();
                 statement.close();
@@ -138,12 +131,10 @@ public class CarteDao {
                     boolean etat_carte = resultSet.getBoolean("isCheck");
                     int idMot = resultSet.getInt("idMot");
                     int id_couleur = resultSet.getInt("idCouleur");
-                    int idIncide = resultSet.getInt("idIndice");
                     int posX = resultSet.getInt("posX");
                     int posY = resultSet.getInt("posY");
                     String mot=this.motDao.getMot(idMot);
-                    String indice=this.indiceDao.getIndice(idIncide);
-                    grille.add(new Carte(foundId,posX,posY,etat_carte,code,mot,Couleur.getByIndex(id_couleur-1),indice)) ;
+                    grille.add(new Carte(foundId,posX,posY,etat_carte,code,mot,Couleur.getByIndex(id_couleur-1))) ;
                     
                 }
                 resultSet.close();
@@ -159,15 +150,49 @@ public class CarteDao {
         //fonction qui attribue les couleurs aléatoirement aux cartes de la partie
         private int getRandomInteger(){
             List<Integer> weightedList = new ArrayList<>();
-            for (int i = 0; i < 15; i++) weightedList.add(0); // 15 times 0
-            for (int i = 0; i < 7; i++) weightedList.add(1);  // 7 times 1
-            for (int i = 0; i < 3; i++) weightedList.add(2);  // 3 times 2
+            for (int i = 0; i < 8; i++) weightedList.add(0); // 8 times BLUE
+            for (int i = 0; i < 15; i++) weightedList.add(1);  // 15 times GRIS
+            for (int i = 0; i < 3; i++) weightedList.add(2);  // 2 times NOIR
             Random random=new Random();
             int index = random.nextInt(weightedList.size());
             return weightedList.get(index);
         }
 
-        
+        public int getCouleurId(int posX, int posY, int idPartie) {
+            try {
+                String query = "SELECT idCouleur FROM carte WHERE posX = ? AND posY = ? AND idPartie = ?";
+                PreparedStatement statement = this.database.prepareStatement(query);
+                statement.setInt(1, posX);
+                statement.setInt(2, posY);
+                statement.setInt(3, idPartie);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getInt("idCouleur");
+                }
+                resultSet.close();
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la fonction getCouleurId() de CarteDao.java");
+            }
+            return -1;
+        }
+
+        public void updateEtatCarte(int etat,int posX, int posY, int idPartie) {
+            try {
+                String query = "UPDATE carte SET isCheck = ? WHERE posX = ? AND posY = ? AND idPartie = ?";
+                PreparedStatement statement = this.database.prepareStatement(query);
+                statement.setInt(1, etat);
+                statement.setInt(2, posX);
+                statement.setInt(3, posY);
+                statement.setInt(4, idPartie);
+                statement.executeUpdate();
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la fonction updateEtatCarte() de CarteDao.java");
+            }
+        }
 
 
 }

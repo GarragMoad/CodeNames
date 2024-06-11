@@ -122,5 +122,33 @@ public class PartieDao {
         return code.toString();
     }
 
+    public void updateScore(int score, int idPartie) {
+        try {
+            String query = "UPDATE partie SET score = ? WHERE id = ?";
+            PreparedStatement statement = this.database.prepareStatement(query);
+            statement.setInt(1, score);
+            statement.setInt(2, idPartie);
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("erreur dans la fonction updateScore() de PartieDao.java");
+        }
+    }
+
+    public void updateEtatPartie(int etat, int idPartie) {
+        try {
+            String query = "UPDATE partie SET etat_partie = ? WHERE id = ?";
+            PreparedStatement statement = this.database.prepareStatement(query);
+            statement.setInt(1, etat);
+            statement.setInt(2, idPartie);
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("erreur dans la fonction updateEtatPartie() de PartieDao.java");
+        }
+    }
+
 
 }

@@ -8,9 +8,8 @@ public class Carte {
     private int posX;
     private int posY;
     private boolean etat_carte;
-    private String indice;
 
-    public Carte(int id, int posX,  int posY,boolean etat ,String code_partie, String mot, Couleur couleur, String indice) {
+    public Carte(int id, int posX,  int posY,boolean etat ,String code_partie, String mot, Couleur couleur) {
         this.id = id;
         this.mot = mot;
         this.couleur = couleur;
@@ -18,7 +17,6 @@ public class Carte {
         this.posX = posX;
         this.posY = posY;
         this.etat_carte = etat;
-        this.indice = indice;
     }
 
     // Getters and setters
@@ -75,12 +73,7 @@ public class Carte {
         this.etat_carte = etat_carte;
     }
 
-    public String getIndice() {
-        return indice;
-    }
-    public void setIndice(String indice) {
-        this.indice = indice;
-    }
+
     
 
 }

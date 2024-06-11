@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import database.polynamesDatabase;
 
 public class JoueurDao {
-        private final polynamesDatabase database;
+    private final polynamesDatabase database;
 
     public JoueurDao() throws SQLException {
         this.database = new polynamesDatabase();
