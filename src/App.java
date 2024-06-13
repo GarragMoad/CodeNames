@@ -3,8 +3,9 @@ import java.sql.SQLException;
 import controllers.CarteController;
 import controllers.IndiceRequestController;
 import controllers.PartieController;
-import controllers.TourController;
+import controllers.CheckMotController;
 import dao.CarteDao;
+import dao.IndicerequestDao;
 import models.Carte;
 import models.Couleur;
 import webserver.WebServer;
@@ -15,59 +16,63 @@ public class App {
     public static void main(String[] args) throws Exception {
         WebServer webserver = new WebServer();
         webserver.listen(8081);
+        // IndicerequestDao indicerequestDao = new IndicerequestDao();
+        // System.out.println(indicerequestDao.getTour(1));
 
         // webserver.getRouter().get("/getGrille", (WebServerContext context)->{
-        //     try {
-        //         CarteController.getGrille(context,"XXXXXX");
-        //     } catch (SQLException e) {
-        //         e.printStackTrace();
-        //         System.out.println("erreur dans la rquête get de la route /getGrille");
-        //     }
+        // try {
+        // CarteController.getGrille(context,"J2uFse");
+        // } catch (SQLException e) {
+        // e.printStackTrace();
+        // System.out.println("erreur dans la rquête get de la route /getGrille");
+        // }
         // });
 
-        //{IN : {nom:"toto",role="1"}}
-        //{OUT : {code :"XXXXXX" , role:"Maitre de mots"}, cartes {list}}
-        webserver.getRouter().post("/CreatePartie", (WebServerContext context)->{
+        // {IN : {nom:"toto",role="1"}}
+        // {OUT : {code :"XXXXXX" , role:"Maitre de mots"}, cartes {list}}
+        webserver.getRouter().post("/CreatePartie", (WebServerContext context) -> {
             try {
-             PartieController.CreatePartie(context);
-         } catch (SQLException e) {
-             e.printStackTrace();
-             System.out.println("erreur dans la rquête post de la route /CreatePartie");
-         }
-         });
+                System.out.println("ici");
+                PartieController.CreatePartie(context);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la rquête post de la route /CreatePartie");
+            }
+        });
 
-         //{IN : {nom:"titi",code="XXXXXX"}}
-        //{OUT : {code :"XXXXXX" , role:"Maitre d intuition", cartes {list}}
-         webserver.getRouter().post("/JoinPartie", (WebServerContext context)->{
+        // {IN : {nom:"titi",code="XXXXXX"}}
+        // {OUT : {code :"XXXXXX" , role:"Maitre d intuition", cartes {list}}
+        webserver.getRouter().post("/JoinPartie", (WebServerContext context) -> {
             try {
-             PartieController.JoinPartie(context);
-         } catch (SQLException e) {
-             e.printStackTrace();
-             System.out.println("erreur dans la rquête post de la route /JoinPartie");
-         }
-         });
-         
-         webserver.getRouter().post("/CheckMot", (WebServerContext context)->{
-            try {
-                TourController.checkCarte(context);
-         } catch (SQLException e) {
-             e.printStackTrace();
-             System.out.println("erreur dans la rquête post de la route /CheckMot");
-         }
-         });
+                PartieController.JoinPartie(context);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la rquête post de la route /JoinPartie");
+            }
+        });
 
-         //IN{indice:"mot",nbMotsSusceptible:3 , code="XXXXX"}
-        //OUT{indice:"mot" , NbmotsSusceptible:3}
-         webserver.getRouter().post("/indice", (WebServerContext context)->{
+        webserver.getRouter().post("/CheckMot", (WebServerContext context) -> {
+            try {
+                CheckMotController.checkCarte(context);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la rquête post de la route /CheckMot");
+            }
+        });
+
+        // IN{indice:"mot",nbMotsSusceptible:3 , code="XXXXX"}
+        // OUT{indice:"mot" , NbmotsSusceptible:3}
+        webserver.getRouter().post("/indice", (WebServerContext context) -> {
             try {
                 IndiceRequestController.insertIndice(context);
-         } catch (SQLException e) {
-             e.printStackTrace();
-             System.out.println("erreur dans la rquête post de la route /CheckMot");
-         }
-         });
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la rquête post de la route /CheckMot");
+            }
+        });
 
+        
 
     }
-    
+
 }

@@ -39,10 +39,13 @@ public class PartieController {
     }
 
     public static void CreatePartie(WebServerContext context) throws SQLException{
+
+        System.out.println("Création de la partie");
         CreatePartieBody bodyrequete= context.getRequest().extractBody(CreatePartieBody.class);
         System.out.println(bodyrequete.toString());
         String nom=bodyrequete.nom();
         int role=bodyrequete.role();
+        System.out.println(nom+" "+role);
        
         int idJoueur=joueurDao.CreateJoueur(nom,role);
         if(idJoueur==-1){
@@ -52,6 +55,7 @@ public class PartieController {
             String code=partieDao.CreatePartie();
             int idPartie=partieDao.getId(code);
             
+            
             String roleOut=joueurDao.getRole(idJoueur);
    
            joueurPartieDao.InsertJoueurPartie(idJoueur, idPartie);
@@ -59,6 +63,7 @@ public class PartieController {
            ArrayList<Carte>cartes = CarteController.getGrille(context,code);
            JsonObject combinedObject = responseJson(code, roleOut, cartes);
     
+            //context.getResponse().json(combinedObject); 
             context.getResponse().json(combinedObject); 
         }
         
@@ -69,8 +74,10 @@ public class PartieController {
         JoinPartieBody bodyrequete= context.getRequest().extractBody(JoinPartieBody.class);
         String nom=bodyrequete.nom();
         String code=bodyrequete.code();
+        System.out.println(nom+" "+code);
     
         int idPartie=partieDao.getId(code);
+        System.out.println(idPartie);
 
         //On vérifie si la partie est toujours en cours
         if(partieDao.getEtatPartie(idPartie)==1){   

@@ -13,24 +13,6 @@ public class sendCarteRequestDao {
         this.database = new polynamesDatabase();
     }
 
-    public int getTour(int codePartie){
-        try {
-            String query = "SELECT tour FROM tour WHERE idPartie = ?";
-            PreparedStatement statement = this.database.prepareStatement(query);
-            statement.setInt(1, codePartie);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("tour");
-            }
-            resultSet.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("erreur dans la fonction getTour() de sendCarteRequestDao.java");
-        }
-        return -1;
-    }
-
     public int getNbMotsSuscpetible(int codePartie){
         try {
             String query = "SELECT nbMotsSusceptible FROM tour WHERE idPartie = ?";

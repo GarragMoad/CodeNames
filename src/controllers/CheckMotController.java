@@ -3,44 +3,62 @@ package controllers;
 import java.sql.SQLException;
 
 import dao.CarteDao;
+import dao.IndicerequestDao;
+import dao.JoueurDao;
+import dao.JoueurPartieDao;
 import dao.PartieDao;
 import dao.sendCarteRequestDao;
 import models.sendCarteRequest;
 import webserver.WebServerContext;
 
-public class TourController {
-
-    private static CarteDao carteDao;
+public class CheckMotController {
+    
+    private static CarteDao carteDao ;
     private static PartieDao partieDao;
     private static sendCarteRequestDao sendCarteRequestDao;
+    private static IndicerequestDao indiceRequestDao;
 
-    public TourController() throws SQLException {
-        carteDao=new CarteDao();
-        sendCarteRequestDao= new sendCarteRequestDao();
-        partieDao=new PartieDao();
+    static {
+        try {
+            partieDao = new PartieDao();
+            carteDao=new CarteDao();
+            sendCarteRequestDao= new sendCarteRequestDao();
+            indiceRequestDao=new IndicerequestDao();
+        } catch (SQLException e) {
+            System.out.println("Erreur dans le bloc static de PartieController.java");
+        }
+    }
+
+
+    public CheckMotController(){
     }
 
     public static void checkCarte(WebServerContext context) throws SQLException{
         sendCarteRequest bodyrequete= context.getRequest().extractBody(sendCarteRequest.class);
-        System.out.println(bodyrequete.toString());
         String codePartie=bodyrequete.code();
         int posX=bodyrequete.posX();
         int posY=bodyrequete.posY();
-
+    
         int idPartie=partieDao.getId(codePartie);
-        int tourActuel=sendCarteRequestDao.getTour(idPartie);
+         
+        int tourActuel=indiceRequestDao.getTour(idPartie);
+        System.out.println("tour actuel : "+tourActuel);
 
         int nbMotsSusceptible=sendCarteRequestDao.getNbMotsSuscpetible(idPartie);
+        System.out.println("nbMotsSusceptible : "+nbMotsSusceptible);
         int nbMotsTrouver=sendCarteRequestDao.getNbMotsTrouver(idPartie);
+        System.out.println("nbMotsTrouver : "+nbMotsTrouver);
         int score = partieDao.getScore(idPartie);
-        System.out.println("avant la condition");
+        System.out.println("score : "+score);
+        int couleurId=carteDao.getCouleurId(posX, posY, idPartie);
+        System.out.println("couleurId : "+couleurId);
+
         if(nbMotsTrouver<=nbMotsSusceptible+1){
-            int couleurId=carteDao.getCouleurId(posX, posY, idPartie);
-            System.out.println("dans le condition");
             switch (couleurId) {
                 case 1:  // Le cas où la couleur est blue
                     if(nbMotsTrouver <= nbMotsSusceptible){  // si le mot choisi est inférieur à N+1
                         partieDao.updateScore(score+nbMotsTrouver, idPartie);
+                        System.out.println("score : "+partieDao.getScore(idPartie));
                     }
                     else if(nbMotsTrouver == nbMotsSusceptible+1){
                         partieDao.updateScore(score+(nbMotsTrouver*nbMotsTrouver), idPartie);
@@ -65,7 +83,8 @@ public class TourController {
             
     }
     else{
-        context.getResponse().serverError("Tour terminé");
+        context.getResponse().serverError("Vous avez dépassé le nombre de mots susceptible de trouver, votre score est de : " + score + "tour terminé");
     }
 }
+
 }

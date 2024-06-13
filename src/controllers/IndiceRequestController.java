@@ -4,6 +4,10 @@ import java.sql.SQLException;
 
 import javax.swing.plaf.metal.MetalBorders.ScrollPaneBorder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
 import dao.CarteDao;
 import dao.IndicerequestDao;
 import dao.JoueurDao;
@@ -40,9 +44,12 @@ public class IndiceRequestController {
         tourActuel=indiceRequestDao.getTour(idPartie);
         IndiceRequestController.tourActuel++;
         indiceRequestDao.insertIndice(indice, nbMotsSusceptible, idPartie,IndiceRequestController.tourActuel);
-        //context.getSSE().emit("indice",  "{\"mon indice\":" + indice + "}");
-        //context.getSSE().emit("nbMotsSusceptible", nbMotsSusceptible);
-        context.getResponse().json("requête aboutie");
+        //context.getSSE().emit("indice", bodyrequete);
+        JsonObject combinedObject = new JsonObject();
+        combinedObject.addProperty("indice", indice);
+        combinedObject.addProperty("nbMotsSusceptible", nbMotsSusceptible);
+        context.getResponse().json(combinedObject);
+        
     }
 
 
