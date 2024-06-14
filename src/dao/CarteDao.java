@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -83,13 +84,41 @@ public class CarteDao {
             return null;
         }
 
+        public Carte getCartebyName(int idPartie, int mot){
+            try {
+                String query = "SELECT * FROM carte WHERE idPartie = ? AND idMot = ?";
+                PreparedStatement statement = this.database.prepareStatement(query);
+                statement.setInt(1, idPartie);
+                statement.setInt(2, mot);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    int foundId = resultSet.getInt("id");
+                    int posX = resultSet.getInt("posX");
+                    int posY = resultSet.getInt("posY");
+                    boolean etat_carte = resultSet.getBoolean("isCheck");
+                    int id_couleur = resultSet.getInt("idCouleur");
+                    String moString = this.motDao.getMot(mot);
+
+                    String code_partie=this.partieDao.getCodePartie(idPartie);
+
+                    return new Carte(foundId,posX,posY,etat_carte,code_partie,moString,Couleur.getByIndex(id_couleur-1));
+                }
+                resultSet.close();
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la fonction getCarte() de CarteDao.java");
+            }
+            return null;
+        }
+
         public ArrayList<Carte> getGrille(String code_partie){
             ArrayList <Carte> grille = new ArrayList<Carte>();
             List<String> mots = this.motDao.getGrille();  // on récupère 25 mots aléatoires pour construire la grille
 
                 for (int i = 0; i < 5; i++) {
                     for (int j = 0; j < 5; j++) {
-                        int couleurRabdom=  getRandomInteger();   // fonction qui attribue les couleurs aléatoirement aux cartes de la partie
+                        int couleurRabdom=  getRandomInteger((i*5+j));   // fonction qui attribue les couleurs aléatoirement aux cartes de la partie
                         int idPartie = this.partieDao.getId(code_partie);
                         int idMot = this.motDao.getId(mots.get(i*5+j));
                         //System.out.println("Mot trouvé pour la partie  : "+code_partie+" : "+ mots.get(i*5+j)  + "Fonction getCarte() de CarteDao.java");
@@ -148,13 +177,12 @@ public class CarteDao {
         }
 
         //fonction qui attribue les couleurs aléatoirement aux cartes de la partie
-        private int getRandomInteger(){
+        private int getRandomInteger(int index){
             List<Integer> weightedList = new ArrayList<>();
             for (int i = 0; i < 8; i++) weightedList.add(0); // 8 times BLUE
             for (int i = 0; i < 15; i++) weightedList.add(1);  // 15 times GRIS
-            for (int i = 0; i < 3; i++) weightedList.add(2);  // 2 times NOIR
-            Random random=new Random();
-            int index = random.nextInt(weightedList.size());
+            for (int i = 0; i < 2; i++) weightedList.add(2);  // 2 times NOIR
+            Collections.shuffle(weightedList);
             return weightedList.get(index);
         }
 
@@ -174,6 +202,24 @@ public class CarteDao {
             } catch (SQLException e) {
                 e.printStackTrace();
                 System.out.println("erreur dans la fonction getCouleurId() de CarteDao.java");
+            }
+            return -1;
+        }
+        public int getCouleurIdByMot(int idMot, int idPartie) {
+            try {
+                String query = "SELECT idCouleur FROM carte WHERE idMot = ? AND idPartie = ?";
+                PreparedStatement statement = this.database.prepareStatement(query);
+                statement.setInt(1, idMot);
+                statement.setInt(2, idPartie);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getInt("idCouleur");
+                }
+                resultSet.close();
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("erreur dans la fonction getCouleurIdByMotAndPartie() de CarteDao.java");
             }
             return -1;
         }

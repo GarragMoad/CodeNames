@@ -6,8 +6,10 @@ import dao.CarteDao;
 import dao.IndicerequestDao;
 import dao.JoueurDao;
 import dao.JoueurPartieDao;
+import dao.MotDao;
 import dao.PartieDao;
 import dao.sendCarteRequestDao;
+import models.Carte;
 import models.sendCarteRequest;
 import webserver.WebServerContext;
 
@@ -17,6 +19,7 @@ public class CheckMotController {
     private static PartieDao partieDao;
     private static sendCarteRequestDao sendCarteRequestDao;
     private static IndicerequestDao indiceRequestDao;
+    private static MotDao  motDao;
 
     static {
         try {
@@ -24,6 +27,7 @@ public class CheckMotController {
             carteDao=new CarteDao();
             sendCarteRequestDao= new sendCarteRequestDao();
             indiceRequestDao=new IndicerequestDao();
+            motDao=new MotDao();
         } catch (SQLException e) {
             System.out.println("Erreur dans le bloc static de PartieController.java");
         }
@@ -40,6 +44,7 @@ public class CheckMotController {
         int posY=bodyrequete.posY();
     
         int idPartie=partieDao.getId(codePartie);
+        System.out.println("idPartie : "+idPartie);
          
         int tourActuel=indiceRequestDao.getTour(idPartie);
         System.out.println("tour actuel : "+tourActuel);
@@ -56,20 +61,26 @@ public class CheckMotController {
         if(nbMotsTrouver<=nbMotsSusceptible+1){
             switch (couleurId) {
                 case 1:  // Le cas où la couleur est blue
-                    if(nbMotsTrouver <= nbMotsSusceptible){  // si le mot choisi est inférieur à N+1
-                        partieDao.updateScore(score+nbMotsTrouver, idPartie);
-                        System.out.println("score : "+partieDao.getScore(idPartie));
-                    }
-                    else if(nbMotsTrouver == nbMotsSusceptible+1){
-                        partieDao.updateScore(score+(nbMotsTrouver*nbMotsTrouver), idPartie);
-                    }
-                    carteDao.updateEtatCarte(1, posX, posY, idPartie);
-                    sendCarteRequestDao.updateNbMotsTrouver(nbMotsTrouver+1, idPartie);
-                    context.getResponse().json("Bravo, vous avez trouvé un mot de couleur blue, votre score est de : " + partieDao.getScore(idPartie) );
-                    break;
+                        int incrtNbMot=nbMotsTrouver++;
+                        sendCarteRequestDao.updateNbMotsTrouver(incrtNbMot, idPartie);
+                        nbMotsTrouver=sendCarteRequestDao.getNbMotsTrouver(idPartie);
+                        if(nbMotsTrouver <= nbMotsSusceptible){  // si le mot choisi est inférieur à N+1
+                            partieDao.updateScore(score+nbMotsTrouver, idPartie);
+                            System.out.println("score : "+partieDao.getScore(idPartie));
+                        }
+                        else if(nbMotsTrouver == nbMotsSusceptible+1){
+                            partieDao.updateScore(score+(nbMotsTrouver*nbMotsTrouver), idPartie);
+                        }
+                        carteDao.updateEtatCarte(1, posX, posY, idPartie);
+                        sendCarteRequestDao.updateNbMotsTrouver(nbMotsTrouver+1, idPartie);
+                        context.getSSE().emit("score",partieDao.getScore(idPartie) );
+                        // context.getResponse().json("Bravo, vous avez trouvé un mot de couleur blue, votre score est de : " + partieDao.getScore(idPartie) );
+                        context.getResponse().json(score);
+                        break;
                 case 2:  // Le cas où la couleur est grise
                     sendCarteRequestDao.updateTour(tourActuel+1, idPartie);
-                    context.getResponse().json("Vous avez trouvé une case grise, votre tour est passé , votre score est de : " + score);
+                    context.getSSE().emit("score",partieDao.getScore(idPartie) );
+                    context.getResponse().json(score);
                     sendCarteRequestDao.updateNbMotsTrouver(nbMotsTrouver+1, idPartie);
                     carteDao.updateEtatCarte(1, posX, posY, idPartie);
                     break;

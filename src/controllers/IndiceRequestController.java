@@ -44,7 +44,7 @@ public class IndiceRequestController {
         tourActuel=indiceRequestDao.getTour(idPartie);
         IndiceRequestController.tourActuel++;
         indiceRequestDao.insertIndice(indice, nbMotsSusceptible, idPartie,IndiceRequestController.tourActuel);
-        //context.getSSE().emit("indice", bodyrequete);
+        context.getSSE().emit("indiceChanel", bodyrequete);
         JsonObject combinedObject = new JsonObject();
         combinedObject.addProperty("indice", indice);
         combinedObject.addProperty("nbMotsSusceptible", nbMotsSusceptible);

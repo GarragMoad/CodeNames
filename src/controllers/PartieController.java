@@ -63,7 +63,7 @@ public class PartieController {
            ArrayList<Carte>cartes = CarteController.getGrille(context,code);
            JsonObject combinedObject = responseJson(code, roleOut, cartes);
     
-            //context.getResponse().json(combinedObject); 
+            context.getSSE().emit("codePartie", code);
             context.getResponse().json(combinedObject); 
         }
         
@@ -74,10 +74,8 @@ public class PartieController {
         JoinPartieBody bodyrequete= context.getRequest().extractBody(JoinPartieBody.class);
         String nom=bodyrequete.nom();
         String code=bodyrequete.code();
-        System.out.println(nom+" "+code);
     
         int idPartie=partieDao.getId(code);
-        System.out.println(idPartie);
 
         //On vérifie si la partie est toujours en cours
         if(partieDao.getEtatPartie(idPartie)==1){   

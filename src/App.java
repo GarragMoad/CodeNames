@@ -16,20 +16,6 @@ public class App {
     public static void main(String[] args) throws Exception {
         WebServer webserver = new WebServer();
         webserver.listen(8081);
-        // IndicerequestDao indicerequestDao = new IndicerequestDao();
-        // System.out.println(indicerequestDao.getTour(1));
-
-        // webserver.getRouter().get("/getGrille", (WebServerContext context)->{
-        // try {
-        // CarteController.getGrille(context,"J2uFse");
-        // } catch (SQLException e) {
-        // e.printStackTrace();
-        // System.out.println("erreur dans la rquête get de la route /getGrille");
-        // }
-        // });
-
-        // {IN : {nom:"toto",role="1"}}
-        // {OUT : {code :"XXXXXX" , role:"Maitre de mots"}, cartes {list}}
         webserver.getRouter().post("/CreatePartie", (WebServerContext context) -> {
             try {
                 System.out.println("ici");

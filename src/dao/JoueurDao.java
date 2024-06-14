@@ -3,6 +3,7 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Random;
 
 import database.polynamesDatabase;
 
@@ -23,8 +24,21 @@ public class JoueurDao {
             statement.setString(1, nom); // Utilisation du pseudo passé en paramètre
             if (role == 1) {
                 statement.setString(2, "Maitre de mots");
-            } else {
+            } else if(role == 2) {
                 statement.setString(2, "Maitre d intuition");
+            }
+            else{
+                Random random = new Random();
+                
+                // Génère un nombre aléatoire entre 0.0 (inclusif) et 1.0 (exclusif)
+                double randomNumber = random.nextDouble();
+                
+                // Vérifie si le nombre est inférieur à 0.5 pour une probabilité de 50%
+                if (randomNumber < 0.5) {
+                    statement.setString(2, "Maitre de mots");
+                } else {
+                    statement.setString(2, "Maitre d intuition");
+                }
             }
             statement.executeUpdate();
             statement.close();

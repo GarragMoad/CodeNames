@@ -65,7 +65,7 @@ public class sendCarteRequestDao {
         return -1;
     }
 
-    public int updateNbMotsTrouver(int nbMotsTrouver, int codePartie){
+    public void updateNbMotsTrouver(int nbMotsTrouver, int codePartie){
         try {
             String query = "UPDATE tour SET nbMotsTrouver = ? WHERE idPartie = ?";
             PreparedStatement statement = this.database.prepareStatement(query);
@@ -73,12 +73,10 @@ public class sendCarteRequestDao {
             statement.setInt(2, codePartie);
             int resultSet = statement.executeUpdate();
             statement.close();
-            return resultSet;
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("erreur dans la fonction updateNbMotsTrouver() de sendCarteRequestDao.java");
         }
-        return -1;
     }
 
 }
